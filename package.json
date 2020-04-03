@@ -2,20 +2,24 @@
   "name": "with-firebase",
   "version": "1.0.0",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "next",
     "build": "next build",
     "start": "NODE_ENV=production node server.js"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
+    "dotenv-webpack": "^1.7.0",
     "express": "^4.14.0",
     "express-session": "^1.15.2",
     "firebase": "^7.6.2",
     "firebase-admin": "^8.9.0",
     "isomorphic-unfetch": "2.0.0",
-    "next": "latest",
+    "js-cookie": "^2.2.1",
+    "next": "^9.3.4",
+    "next-cookies": "^2.0.3",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "session-file-store": "^1.0.0"
+    "session-file-store": "^1.0.0",
+    "styled-components": "^5.0.1"
   }
 }
