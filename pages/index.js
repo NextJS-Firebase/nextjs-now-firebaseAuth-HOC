@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { firebase } from "./_app";
-import withAuth, { logout } from "../components/withAuth";
+import React, { useEffect } from "react"
+import { firebase } from "./_app"
+import withAuth, { logout } from "../components/withAuth"
 // export async function getServerSideProps({ req, query }) {
 //   const user = req && req.session ? req.session.decodedToken : null;
 //   // don't fetch anything from firebase if the user is not found
@@ -15,71 +15,72 @@ import withAuth, { logout } from "../components/withAuth";
 //   };
 // }
 
-class Index extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: this.props.user,
-      value: "",
-      messages: this.props.messages
-    };
+const Index = (props) => {
+  const handleLogout = () => {
+    firebase.auth().signOut()
+    logout()
   }
+  useEffect(() => {
+    async function getUser() {
+      const helloWorld = firebase.functions().httpsCallable("helloWorld")
+      helloWorld()
+        .then((response) => {
+          console.log(response)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      // try {
+      //   const user = await firebase
+      //     .firestore()
+      //     .collection("users")
+      //     .doc("123")
+      //     .get()
 
-  removeDbListener() {
-    // firebase.database().ref('messages').off()
-    if (this.state.unsubscribe) {
-      this.state.unsubscribe();
+      //   if (user.exists) {
+      //     const { data } = user.data()
+      //     console.log(data)
+      //   } else {
+      //     // user does not exist
+      //     console.log("no such user")
+      //   }
+      // } catch (e) {
+      //   console.log(e)
+      // }
     }
-  }
+    // getUser()
+  }, [])
 
-  handleChange(event) {
-    this.setState({ value: event.target.value });
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-    var db = firebase.firestore();
-    const date = new Date().getTime();
-    db.collection("messages")
-      .doc(`${date}`)
-      .set({
-        id: date,
-        text: this.state.value
-      });
-    this.setState({ value: "" });
-  }
-
-  handleLogout() {
-    firebase.auth().signOut();
-    logout();
-  }
-
-  render() {
-    const { user, value, messages } = this.state;
-
-    return (
+  return (
+    <div>
+      {console.log(props)}
+      <button onClick={handleLogout}>Logout</button>
       <div>
-        <button onClick={this.handleLogout}>Logout</button>
-        {user && (
-          <div>
-            <form onSubmit={this.handleSubmit}>
-              <input
-                type={"text"}
-                onChange={this.handleChange}
-                placeholder={"add message..."}
-                value={value}
-              />
-            </form>
-            <ul>
-              {messages &&
-                Object.keys(messages).map(key => (
-                  <li key={key}>{messages[key].text}</li>
-                ))}
-            </ul>
-          </div>
-        )}
+        <form onSubmit={() => console.log("submit")}>
+          <input
+            type={"text"}
+            onChange={() => console.log("change")}
+            placeholder={"add message..."}
+            value={null}
+          />
+        </form>
       </div>
-    );
-  }
+    </div>
+  )
 }
-export default withAuth(Index);
+// Note: Get initial props won't work since we're wrapping with an HOC.
+// Consider using the swr hook from the Next team.
+Index.getInitialProps = async (ctx) => {
+  const helloWorld = firebase.functions().httpsCallable("helloWorld")
+  let data
+  helloWorld()
+    .then((response) => {
+      data = response
+      console.log(data)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  return { data }
+}
+export default withAuth(Index)
